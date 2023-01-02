@@ -14,7 +14,7 @@
     "test:clear": "jest --clearCache"
   },
   "peerDependencies": {
-    "@universal-packages/token-registry": "^1.2.0",
+    "@universal-packages/token-registry": "^1.3.1",
     "redis": "^4.3.0"
   },
   "devDependencies": {

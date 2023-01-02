@@ -14,12 +14,12 @@ describe('Registry::RedisEngine', (): void => {
 
     await engine.connect()
 
-    const registry = new Registry(engine)
+    const registry = new Registry({ engine })
+
+    expect(registry.options.engine).toEqual(engine)
 
     const subject = { property: 'a' }
     const token = await registry.register(subject)
-
-    expect(registry.engine).toEqual(expect.any(RedisEngine))
 
     expect(await registry.retrieve(token)).toEqual(subject)
 
@@ -31,19 +31,21 @@ describe('Registry::RedisEngine', (): void => {
     const token2 = await registry.register(subject, 'user:2')
     const token3 = await registry.register(subject, 'user:2')
 
-    expect((await registry.categories()).sort()).toEqual(['user:2', 'user:1'].sort())
+    await registry.update(token3, { ...subject, updated: true })
+
+    expect(await registry.categories()).toEqual(['user:1', 'user:2'])
     expect(await registry.groupBy('user:1')).toEqual({ [token1]: subject })
-    expect(await registry.groupBy('user:2')).toEqual({ [token2]: subject, [token3]: subject })
+    expect(await registry.groupBy('user:2')).toEqual({ [token2]: subject, [token3]: { ...subject, updated: true } })
 
     await registry.dispose(token2)
-    expect((await registry.categories()).sort()).toEqual(['user:2', 'user:1'].sort())
+    expect(await registry.categories()).toEqual(['user:1', 'user:2'])
     expect(await registry.groupBy('user:1')).toEqual({ [token1]: subject })
-    expect(await registry.groupBy('user:2')).toEqual({ [token3]: subject })
+    expect(await registry.groupBy('user:2')).toEqual({ [token3]: { ...subject, updated: true } })
 
     await registry.dispose(token1)
     expect(await registry.categories()).toEqual(['user:2'])
     expect(await registry.groupBy('user:1')).toBeUndefined()
-    expect(await registry.groupBy('user:2')).toEqual({ [token3]: subject })
+    expect(await registry.groupBy('user:2')).toEqual({ [token3]: { ...subject, updated: true } })
 
     await registry.dispose(token3)
     expect(await registry.categories()).toEqual([])

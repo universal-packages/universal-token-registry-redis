@@ -15,7 +15,7 @@ npm install @universal-packages/token-registry
 npm install redis
 ```
 
-# RedisEngine
+## RedisEngine
 
 Just pass this engine to the registry to enable it to use ready as the storage engine.
 
@@ -29,7 +29,7 @@ await engine.connect()
 const registry = new Registry(engine)
 ```
 
-## Options
+### Options
 
 `RedisEngine` takes the same [options](https://github.com/redis/node-redis/blob/master/docs/client-configuration.md) as the redis client.
 
@@ -40,7 +40,8 @@ Additionally takes the following ones:
 - **`identifier`** `String`
   String to prepend for identifying the registry related keys.
 
-## .connect()
+### Instance methods
+#### **`connect()`**
 
 Connect the internal client in case it was not passed as option.
 
@@ -48,7 +49,7 @@ Connect the internal client in case it was not passed as option.
 await engine.connect()
 ```
 
-## .disconnect()
+#### **`disconnect()`**
 
 Disconnect the internal client in case it was not passed as option.
 

@@ -26,7 +26,7 @@ import { RedisEngine } from '@universal-packages/universal-token-registry-redis'
 const engine = new RedisEngine({ host: 'localhost' })
 await engine.connect()
 
-const registry = new Registry(engine)
+const registry = new Registry({ engine })
 ```
 
 ### Options
@@ -41,6 +41,7 @@ Additionally takes the following ones:
   String to prepend for identifying the registry related keys.
 
 ### Instance methods
+
 #### **`connect()`**
 
 Connect the internal client in case it was not passed as option.

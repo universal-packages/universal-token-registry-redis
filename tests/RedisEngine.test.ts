@@ -4,17 +4,27 @@ import { RedisEngine } from '../src'
 let engine: RedisEngine
 
 afterEach(async (): Promise<void> => {
-  await engine.clear()
-  await engine.disconnect()
+  if (engine) {
+    await engine.clear()
+    await engine.release()
+  }
 })
 
 describe('Registry::RedisEngine', (): void => {
-  it('uses the memory engine by default', async (): Promise<void> => {
+  it('can gran a global client', async (): Promise<void> => {
+    global['client'] = jest.fn()
+
+    const engine = new RedisEngine({ globalClient: 'client', identifier: 'testing-registry' })
+
+    expect(engine).toMatchObject({ client: global['client'] })
+  })
+
+  it('behaves as expected', async (): Promise<void> => {
     engine = new RedisEngine({ identifier: 'testing-registry' })
 
-    await engine.connect()
-
     const registry = new Registry({ engine })
+
+    await registry.initialize()
 
     expect(registry.options.engine).toEqual(engine)
 

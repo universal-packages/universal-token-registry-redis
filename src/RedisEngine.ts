@@ -6,20 +6,23 @@ export default class RedisEngine implements EngineInterface {
   public readonly options: RedisEngineOptions
   public readonly client: RedisClientType<RedisModules, RedisFunctions, RedisScripts>
 
-  private isPubMine = false
+  private isClientMine = false
 
   public constructor(options?: RedisEngineOptions) {
     this.options = { identifier: 'universal-registry', ...options }
-    this.isPubMine = !this.options.client
-    this.client = this.isPubMine ? createClient(this.options) : this.options.client
+
+    const globalClient = global[this.options.globalClient]
+
+    this.isClientMine = !globalClient && !this.options.client
+    this.client = globalClient || this.options.client || createClient(this.options)
   }
 
-  public async connect(): Promise<void> {
-    if (this.client) await this.client.connect()
+  public async initialize(): Promise<void> {
+    if (this.isClientMine) await this.client.connect()
   }
 
-  public async disconnect(): Promise<void> {
-    if (this.client) await this.client.disconnect()
+  public async release(): Promise<void> {
+    if (this.isClientMine) await this.client.disconnect()
   }
 
   public async clear(): Promise<void> {

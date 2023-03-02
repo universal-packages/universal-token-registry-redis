@@ -23,10 +23,9 @@ Just pass this engine to the registry to enable it to use ready as the storage e
 import { Registry } from '@universal-packages/universal-token-registry'
 import { RedisEngine } from '@universal-packages/universal-token-registry-redis'
 
-const engine = new RedisEngine({ host: 'localhost' })
-await engine.connect()
+const registry = new Registry({ engine: 'redis', engineOptions: { host: 'localhost' } })
 
-const registry = new Registry({ engine })
+await registry.initialize()
 ```
 
 ### Options
@@ -37,26 +36,10 @@ Additionally takes the following ones:
 
 - **`client`** `RedisClient`
   If you already have a client working in your app you can pass the instance here to not connect another client inside the instance.
+- **`globalClient`** `String`
+  If the redis client lives in a global variable, name it here.
 - **`identifier`** `String`
   String to prepend for identifying the registry related keys.
-
-### Instance methods
-
-#### **`connect()`**
-
-Connect the internal client in case it was not passed as option.
-
-```js
-await engine.connect()
-```
-
-#### **`disconnect()`**
-
-Disconnect the internal client in case it was not passed as option.
-
-```js
-await engine.disconnect()
-```
 
 ## Typescript
 

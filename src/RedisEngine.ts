@@ -31,73 +31,61 @@ export default class RedisEngine implements EngineInterface {
   }
 
   public async delete(token: string): Promise<void> {
-    const tokenCategoryKey = this.generateTokenCategoryKey(token)
-    const category = await this.client.get(tokenCategoryKey)
+    const tokenKey = this.generateSearchTokenKey(token)
+    const actualTokenKey = (await this.client.keys(tokenKey))[0]
 
-    if (category) {
-      const categoryKey = this.generateCategoryKey(category)
-      await this.client.sRem(categoryKey, token)
-    }
-
-    const tokenKey = this.generateTokenKey(token)
-
-    await this.client.del([tokenKey, tokenCategoryKey])
+    await this.client.del(actualTokenKey)
   }
 
   public async get(token: string): Promise<Record<string, any>> {
-    const tokenKey = this.generateTokenKey(token)
-    const serializedSubject = await this.client.get(tokenKey)
+    const tokenKey = this.generateSearchTokenKey(token)
+    const actualTokenKey = (await this.client.keys(tokenKey))[0]
 
-    if (serializedSubject) return JSON.parse(serializedSubject)
+    if (actualTokenKey) {
+      const serializedSubject = await this.client.get(actualTokenKey)
+
+      return JSON.parse(serializedSubject)
+    }
   }
 
-  public async getGroup(category: string): Promise<Record<string, any>> {
-    const categoryKey = this.generateCategoryKey(category)
-    const tokens = await this.client.sMembers(categoryKey)
+  public async getAll(category: string): Promise<Record<string, any>> {
+    const tokenKey = this.generateSearchCategoryKey(category)
+    const tokens = await this.client.keys(tokenKey)
 
     if (tokens.length) {
-      const keys = tokens.map((token: string): string => this.generateTokenKey(token))
-      const serializedSubjects = await this.client.mGet(keys)
+      const serializedSubjects = await this.client.mGet(tokens)
       const subjects = serializedSubjects.map((serialized: string): Record<string, any> => JSON.parse(serialized))
 
       return tokens.reduce((final: Record<string, any>, token: string, index: number): Record<string, any> => {
-        final[token] = subjects[index]
+        const tokenParts = token.split(':')
+        const actualTokenKey = tokenParts[tokenParts.length - 1]
+        final[actualTokenKey] = subjects[index]
 
         return final
       }, {})
     }
   }
 
-  public async listCategories(): Promise<string[]> {
-    const baseKeys = await this.client.keys(`${this.options.identifier}:category:*`)
-
-    return baseKeys.map((key: string): string => key.replace(`${this.options.identifier}:category:`, '')).sort()
-  }
-
-  public async set(token: string, subject: Record<string, any>, category?: string): Promise<void> {
+  public async set(token: string, category: string, subject: Record<string, any>): Promise<void> {
     const serializedSubject = JSON.stringify(subject)
-    const tokenKey = this.generateTokenKey(token)
+    const tokenKey = this.generateTokenKey(token, category)
 
-    await this.client.set(tokenKey, serializedSubject)
-
-    if (category) {
-      const categoryKey = this.generateCategoryKey(category)
-      await this.client.sAdd(categoryKey, token)
-
-      const tokenCategoryKey = this.generateTokenCategoryKey(token)
-      await this.client.set(tokenCategoryKey, category)
+    if (this.options.expireAfter) {
+      await this.client.setEx(tokenKey, this.options.expireAfter, serializedSubject)
+    } else {
+      await this.client.set(tokenKey, serializedSubject)
     }
   }
 
-  private generateCategoryKey(category: string): string {
-    return `${this.options.identifier}:category:${category}`
+  private generateTokenKey(token: string, category: string): string {
+    return `${this.options.identifier}:${category}:${token}`
   }
 
-  private generateTokenKey(token: string): string {
-    return `${this.options.identifier}:${token}`
+  private generateSearchTokenKey(token: string): string {
+    return `${this.options.identifier}:*:${token}`
   }
 
-  private generateTokenCategoryKey(token: string): string {
-    return `${this.options.identifier}:${token}:category`
+  private generateSearchCategoryKey(category: string): string {
+    return `${this.options.identifier}:${category}:*`
   }
 }

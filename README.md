@@ -40,6 +40,8 @@ Additionally takes the following ones:
   If the redis client lives in a global variable, name it here.
 - **`identifier`** `String`
   String to prepend for identifying the registry related keys.
+- **`expireAfter`** `number`
+  Time in seconds to expire the tokens after, default is never expire.
 
 ## Typescript
 

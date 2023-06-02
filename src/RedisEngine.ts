@@ -1,6 +1,7 @@
-import { RedisEngineOptions } from './RedisEngine.types'
-import { createClient, RedisClientType, RedisFunctions, RedisModules, RedisScripts } from 'redis'
 import { EngineInterface } from '@universal-packages/token-registry'
+import { RedisClientType, RedisFunctions, RedisModules, RedisScripts, createClient } from 'redis'
+
+import { RedisEngineOptions } from './RedisEngine.types'
 
 export default class RedisEngine implements EngineInterface {
   public readonly options: RedisEngineOptions

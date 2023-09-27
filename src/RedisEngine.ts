@@ -18,7 +18,7 @@ export default class RedisEngine implements EngineInterface {
     this.client = globalClient || this.options.client || createClient(this.options)
   }
 
-  public async initialize(): Promise<void> {
+  public async prepare(): Promise<void> {
     if (this.isClientMine) await this.client.connect()
   }
 

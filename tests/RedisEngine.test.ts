@@ -25,7 +25,7 @@ describe('Registry::RedisEngine', (): void => {
 
     const registry = new Registry({ engine })
 
-    await registry.initialize()
+    await registry.prepare()
 
     expect(registry.options.engine).toEqual(engine)
 
@@ -71,7 +71,7 @@ describe('Registry::RedisEngine', (): void => {
 
     const registry = new Registry({ engine })
 
-    await registry.initialize()
+    await registry.prepare()
 
     const subject = { property: 'a' }
     const token = await registry.register(subject)

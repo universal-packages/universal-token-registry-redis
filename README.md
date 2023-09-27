@@ -25,7 +25,7 @@ import { RedisEngine } from '@universal-packages/universal-token-registry-redis'
 
 const registry = new Registry({ engine: 'redis', engineOptions: { host: 'localhost' } })
 
-await registry.initialize()
+await registry.prepare()
 ```
 
 ### Options

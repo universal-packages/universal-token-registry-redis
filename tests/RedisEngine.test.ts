@@ -11,7 +11,7 @@ afterEach(async (): Promise<void> => {
   }
 })
 
-describe('Registry::RedisEngine', (): void => {
+describe(RedisEngine, (): void => {
   it('can gran a global client', async (): Promise<void> => {
     global['client'] = jest.fn()
 

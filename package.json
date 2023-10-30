@@ -1,6 +1,6 @@
 {
   "name": "@universal-packages/token-registry-redis",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "Redis engine for universal-token-registry",
   "author": "David De Anda <david@universal-packages.com> (https://github.com/universal-packages)",
   "license": "MIT",

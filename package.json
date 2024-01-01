@@ -16,7 +16,7 @@
     "update-dependents": "umaintenance update-dependents"
   },
   "peerDependencies": {
-    "@universal-packages/token-registry": "^1.7.4",
+    "@universal-packages/token-registry": "^1.7.5",
     "redis": "^4.6.10"
   },
   "devDependencies": {

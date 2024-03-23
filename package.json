@@ -16,14 +16,14 @@
     "update-universal-dependencies": "umaintenance update-universal-dependencies"
   },
   "peerDependencies": {
-    "@universal-packages/token-registry": "^1.7.6",
+    "@universal-packages/token-registry": "^1.7.9",
     "redis": "^4.6.10"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.2.0",
     "@types/jest": "^29.5.5",
     "@types/node": "^18.11.9",
-    "@universal-packages/maintenance": "^1.3.13",
+    "@universal-packages/maintenance": "^1.3.14",
     "jest": "^29.7.0",
     "prettier": "^3.0.3",
     "ts-jest": "^29.1.1",
